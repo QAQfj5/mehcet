@@ -1,0 +1,40 @@
+@import url("/a.css");
+@import url("/body.css");
+@import url("/div.css");
+@import url("/list.css");
+* {
+    font-family: 'Ubuntu Mono';
+}
+html{
+    height: 100%;
+    /* margin: 0; */
+    /* padding: 0; */
+}
+body{
+    display: flex;
+}
+.hide {
+    display: none;
+}
+#left {
+    /* float: left; */
+    /* width: 17em; */
+    height: 100%;
+}
+#middle {
+    width: calc(100% - 21em);
+    height: 100%;
+    margin: auto;
+}
+#right {
+    /* float: right; */
+    width: 6em;
+    height: 100%;
+}
+/* .leftest {
+    margin-left: 12em;
+}
+
+.rightest {
+    margin-right: 12em;
+} */

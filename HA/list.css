@@ -1,0 +1,34 @@
+.ul_hide_list {
+    list-style-type: none;
+}
+
+.ul_simple {
+    margin: 0px;
+    padding: 4px;
+    border-radius: 0.5em;
+    background-color: rgba(255, 255, 255, 0.85);
+}
+
+.ul_main {
+    width: 5em;
+    /* float: right; */
+    position: fixed;
+    top: 20em;
+    right: 0em;
+}
+
+
+.li_simple {
+    margin: 0px;
+    padding: 0px;
+    border-radius: 0.5em;
+    background-color: rgba(255, 255, 255, 0.85);
+}
+
+.li_shadow {
+    transition-duration: 300ms;
+}
+
+.li_shadow:hover {
+    background-color: rgba(255, 0, 0, 0.85);
+}

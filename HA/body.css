@@ -1,0 +1,13 @@
+body {
+    background-color: rgba(255, 255, 255, 1.0);
+    /* background: url("https://z1.ax1x.com/2023/09/11/pPglxe0.jpg"); */
+    background-size: cover;
+    background-position: center;
+    background-attachment: fixed;
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    /* margin-right: 12em;
+    margin-left: 12em; */
+}

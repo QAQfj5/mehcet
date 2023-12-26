@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+	<head> 
+		<meta charset = "utf-8" />
+		<link href = "/jquery.min.js" />
+		<title> Login </title>
+		<link href = "/div.css" rel = "stylesheet" />
+		<style> 
+			body{
+				background-color: rgba(255, 255, 255, 1);
+			}
+		</style>
+	</head>
+	<body>
+		<div class = "div_simple div_shadow" style = "width: 20em; margin: auto;">
+			<form action = "/api/login" method = "post">
+				<label for = "name"> name </label>
+				<input name = "name" id = "name" type = "text"/> <br/>
+				<br/>
+				<label for = "password"> password </label>
+				<input name = "password" id = "password" type = "password"/> <br/>
+				<!-- <br/> -->
+				<a href = "/register.html" style = "position: relative; left: 12em;"> register </a>
+				<div id = "login">  </div>
+				<br/>
+				<input type = "submit" value = "awa" style = "position:relative; left: 9em;"/>
+			</form>
+			
+			
+			<!-- <form action="http://foo.com" method="post">
+				<div>
+				  <label for="say">What greeting do you want to say?</label>
+				  <input name="say" id="say" value="Hi" />
+				</div>
+				<div>
+				  <label for="to">Who do you want to say it to?</label>
+				  <input name="to" id="to" value="Mom" />
+				</div>
+				<div>
+				  <button>Send my greetings</button>
+				</div>
+			  </form>
+			   -->
+		</div>
+	</body>
+
+</html>
