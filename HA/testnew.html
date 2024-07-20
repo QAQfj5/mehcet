@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html>
+	
+	<head>
+		<meta charset = "utf-8" />
+		<title> new </title>
+		<link href = "/style.css"  rel = "stylesheet"/>
+		<script src="/jquery.min.js" ></script>
+		<script src="/jquery.cookie.min.js" ></script>
+		<script src="/script_chat.js" ></script>
+        <link rel="stylesheet" href="/editormd/css/editormd.css" />
+		<script src="/editormd/editormd.min.js"></script>
+		<style> 
+            .input_title {
+                width: 25em;
+                display: block;
+                margin: auto;
+                /* height: 50em; */
+            }
+            .input_main {
+                width: 40em;
+                height: 10em;
+                display: block;
+                margin: auto;
+                /* position: absolute; */
+            }
+            .send_button {
+                width: 10em;
+                display: block;
+                position: relative;
+                left: 40.25em;
+            }
+		</style>
+	</head>
+
+	<body>
+		<div class = "div_simple div_shadow" style = "width: 50em; margin: auto;">
+            <form action = "/api/chat" id = "input" style = "margin: auto" method = "get">
+                <label for = "title">   </label>
+                <input type = "text" name = "title" id = "title" autocomplete = "off" class = "input_title" placeholder = "title" /> 
+                <br/><br/>
+                <!-- <br/> -->
+                <label for = "main">   </label>
+                <div id = "editor"> <textarea class = "input_main" name = "main" id = "main" rows = "10" placeholder = "还没写完你急牛魔"></textarea> </div>
+                <label for = "submit">   </label>
+                <br/>
+                <input type = "submit" name = "submit" value = "send" class = "send_button" />
+            </form>
+		</div>
+        <div id="test-editor">
+			<textarea >### 关于 Editor.md
+		
+		**Editor.md** 是一款开源的、可嵌入的 Markdown 在线编辑器（组件），基于 CodeMirror、jQuery 和 Marked 构建。
+			</textarea>
+		</div> 
+		<script type="text/javascript">
+			// $(function() {
+				var editor = editormd("test-editor", {
+					// width  : "100%",
+					height : "100%",
+					path   : "/editormd/lib/"
+				});
+			// });
+		</script>
+		<script src = "/socket.io/socket.io.js"></script>
+        <script type="text/javascript">
+			// $(() => {
+				var editor = editormd("editor", {
+					// width  : "100%",
+					height : "100%",
+					path   : "/editormd/lib/"
+				});
+			// });
+		</script>
+		<script>
+            function get_time() {
+				const now = new Date();
+				const year = now.getFullYear();
+				const month = now.getMonth() + 1;
+				const date = now.getDate();
+				const hours = now.getHours();
+				const minutes = now.getMinutes();
+				const seconds = now.getSeconds();
+				return `${year}-${month}-${date} ${hours}:${minutes}:${seconds}`;
+			}
+            const ck = $.cookie('IsLogin');
+			const socket = io();
+            // console.log($);
+            const form = document.getElementById("input");
+            const title = document.getElementById("title");
+            const main = document.getElementById("main");
+            // console.log(form);w
+            form.addEventListener('submit', (e) => {
+                e.preventDefault();
+                if(ck === undefined) main.value = "你没登录发牛魔的ques啊"
+                else {
+                    var empty = 0;
+                    if(title.value == '') {
+                        empty = 1;
+                        title.placeholder = "你tm标题没写你知道吗";
+                    }
+                    if(main.value == '' && empty) {
+                        main.placeholder = "你tm不仅标题没写还不写内容是吧"
+                    } else if(main.value == '' && empty == 0) { 
+                        empty = 1;
+                        main.placeholder = "你tm内容没写你知道吗"
+                    }
+                    if(empty != 0) return;
+                    socket.emit('ques', {id: ck, title: title.value, main: main.value, time: get_time()});
+                    title.value = '';
+                    main.value = '';
+                    
+                }
+            })
+            socket.on('connect', () => {
+                console.log(socket.id);
+            });
+            socket.on('ques', (id, goal) => {
+                if(id === socket.id) window.location.href = goal;
+            });
+
+
+		</script>
+		<!-- <a href = "https://www.luogu.com.cn/" class = "a_simple a_shadow"> hrangwokankan </a> -->
+	</body>
+</html>

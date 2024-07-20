@@ -1,32 +1,10 @@
-
-li a:link {color: #000000;}
-li a:visited {color: #000000;}
-li a:hover {transition-duration: 300ms; color: #FFFFFF;}
-li a:active {color: #FFFFFF;}
-li a:link {text-decoration: none;}
-li a:visited {text-decoration: none;}
-li a:hover {text-decoration: none;}
-li a:active {text-decoration: none;}
-.ul_hide_list {
-    list-style-type: none;
-}
 .a_simple {
     /* margin: 0.5em; */
     padding: 0.2em;
     border-radius: 0.5em;
     background-color: rgba(255, 255, 255, 0.85);
 }
-li a {
-    /* margin: 0.5em; */
-    display: block;
-    width: 4.5em;
-    padding: 1.75em 0;
-    text-align: center;
-    transition-duration: 300ms;
-    /* border-radius: 0.5em; */
-    /* background-colomr: rgba(255, 255, 255, 0.85); */
-}
-li a:hover {
-    padding-top: 1.25em;
-    padding-bottom: 2.25em;
+a{
+    text-decoration-line: none;
+    text-decoration-color: #000000;
 }

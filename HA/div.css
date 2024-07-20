@@ -15,7 +15,9 @@
     background-color: rgba(255, 255, 255, 1.0);
     box-shadow: 0.3em 0.3em 1em 0.1em rgba(0, 0, 0, 0.40);
 }
-
+#div_left_hidden {
+    display: block;
+}
 #div_chat {
     /* position: absolute; */
     /* left: 0; */

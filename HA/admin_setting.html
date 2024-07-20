@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+    <head>
+		<meta charset = "utf-8" />
+		<title> Hydroxy_Acid </title>
+		<link href = "/style.css"  rel = "stylesheet"/>
+		<script src="/jquery.min.js" ></script>
+        <script src="/jquery.cookie.min.js" ></script>
+
+        <script> 
+        </script>
+    </head>
+    <body>
+        <div id = "wangle" class = "div_simple" style = "margin: auto; width: 80em; text-align: center;"> 你怎么进来的😡？ <br/> </div>
+        <script src="/socket.io/socket.io.js"></script>
+        <script>
+            const socket = io(); var user_info;
+            const ck = $.cookie('IsLogin');
+        	socket.on('connect', () => {
+				socket.emit("passed message", socket.id);
+				socket.emit('get_user_info', ck);
+			});
+			socket.on('user_info', (id, info) => {
+				// console.log);
+				if(socket.id != id) return;
+				console.log(info);
+				user_info = info;
+                console.log(user_info.toString());
+                document.getElementById("wangle").innerHTML += JSON.stringify(user_info);
+			});
+        </script>
+    </body>
+
+
+
+</html>

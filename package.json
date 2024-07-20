@@ -1,24 +1,32 @@
 {
-  "name": "skfhdskjhfla",
+  "name": "mehcet",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
+  "dependencies": {
+    "body-parser": "^1.20.2",
+    "cluster": "^0.7.7",
+    "cookie-parser": "^1.4.6",
+    "cors": "^2.8.5",
+    "express": "^4.19.1",
+    "express-ws": "^5.0.2",
+    "marked": "^12.0.2",
+    "os": "^0.1.2",
+    "path": "^0.12.7",
+    "readline": "^1.3.0",
+    "socket.io": "^4.7.5",
+    "sqlite": "^5.1.1",
+    "websocket": "^1.0.34",
+    "ws": "^8.16.0"
+  },
   "scripts": {
-    "start": "node index.js"
+    "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",
   "license": "ISC",
-  "dependencies": {
-    "app": "^0.1.0",
-    "body-parser": "^1.20.2",
-    "cookie-parser": "^1.4.6",
-    "cors": "^2.8.5",
-    "crypto": "^1.0.1",
-    "express": "^4.18.2",
-    "fs": "^0.0.1-security",
-    "jquery": "^3.7.1",
-    "MD5": "^1.3.0",
-    "node": "^21.1.0",
-    "path": "^0.12.7"
+  "type": "module",
+  "optionalDependencies": {
+    "bufferutil": "^4.0.8",
+    "utf-8-validate": "^5.0.10"
   }
 }

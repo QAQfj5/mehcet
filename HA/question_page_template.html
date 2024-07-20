@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html>
+	
+	<head>
+		<meta charset = "utf-8" />
+		<title> waiting </title>
+		<link href = "/style.css"  rel = "stylesheet"/>
+		<script src = "/jquery.min.js" ></script>
+        <script src="/jquery.cookie.min.js" ></script>
+        <script src="/lib/marked.js"></script>
+        <link rel="stylesheet" href="/lib/katex.min.css">
+        <script src="/lib/katex.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/contrib/auto-render.min.js" integrity="sha384-43gviWU0YVjaDtb/GhzOouOXtZMP/7XUzwPTstBeZFe/+rCMvRwr4yROQP43s0Xk" crossorigin="anonymous"></script>
+        <script src="/lib/katex.js"></script>
+        <style>  
+            .debug{ color: black;}
+			.chat_font {
+				font-size: 8px;
+			}
+            .div_chat {
+				overflow: auto; 
+				border-top-color: aqua;
+				border-top-width: 1px;
+				border-top-left-radius: 0px;
+				border-top-right-radius: 0px;
+				border-bottom-left-radius: 0.30em;
+				border-bottom-right-radius: 0.30em;
+				margin-top: 1px;
+				margin-bottom: 0.5em;
+				word-wrap: break-word; /*英文换行*/
+				white-space: pre-wrap; /*中文换行*/
+			}
+            .extra_info {
+                display: flex;
+                flex-direction: row-reverse;
+            }
+        </style>
+        <script> 
+            var form_state = "answer";
+            var object = 0;
+        </script>
+	</head>
+
+	<body>
+
+        <div style = "width: 60%; margin: auto; padding: 8px;" class = "debug"> <h1 id = "title"></h1> </div>
+        <br/>
+        <div style = "width: 60%; margin: auto; padding: 8px;" class = "debug">
+            <button id = "Answer" onclick = "calc_form(this.id)"> answer </button>
+            <div class = "div_simple div_shadow debug" id = "question"></div>
+
+            <script>
+                
+            </script>
+            
+            <ul id = "answer_list">  </ul>
+            <form id = "reply_form" method = "get">
+                <label for = "input">   </label>
+                <textarea type = "text" name = "input" id = "input" autocomplete = "off" style = "width: 14em;" placeholder = "make answer"></textarea>
+                <label for = "submit">   </label>
+                <input type = "submit" name = "submit" value = "send" />
+            </form>
+            <script src = "/socket.io/socket.io.js"> </script>
+            <script> 
+                var answer_cnt = 0;
+                var ques_id;
+                if(window.location.href.split('/')[window.location.href.split('/').length - 1] !== "")
+                    ques_id = window.location.href.split('/')[window.location.href.split('/').length - 1];
+                else ques_id = window.location.href.split('/')[window.location.href.split('/').length - 2];
+                const ck = $.cookie('IsLogin');
+                const socket = io();
+                const form = document.getElementById("reply_form");
+                const input = document.getElementById("input");
+                const answer_list = document.getElementById('answer_list');
+                function calc_form(bottom_id) {
+                    console.log(bottom_id);
+                    var tmp = document.getElementById("input");
+                    if(bottom_id.substring(0, 5) == "extra") {
+                        form_state = "extra";
+                        object = Number(bottom_id.substring(5));
+                        input.placeholder = `add answer to answer${object}`;
+                    } else if(bottom_id.substring(0, 5) == "reply") {
+                        form_state = "reply";
+                        object = Number(bottom_id.substring(5));
+                        input.placeholder = `还没写reply你大坝`;
+                        // input.placeholder = `reply answer${object}`;
+                    } else {
+                        form_state = "answer";
+                        object = 0;
+                        input.placeholder = `make answer`;
+                    }
+
+                }
+                function add_extra_answer(answer_id, msg) {
+                    // const msg_answer = msg.answer;
+                    const answer_list = document.getElementById(`extra_answer_list${answer_id}`);
+                    const who = document.createElement('div');
+                    who.innerHTML = 
+                    `<span style = "width: 16px; height: 16px;"> 
+                        <a href = "/user/${msg.id}" style = "width: 16px; height: 16px;"> <img alt = "${msg.id}" src = "/avatar/${msg.id}" width = "16px" height = "16px"/> </a> 
+                    </span>
+                    <span> ${msg.id} : </span>
+                    `;
+                    const main = document.createElement('div');
+                    // var tmp = '';
+                    // msg.answer.forEach(st => {
+                    //     // tmp += marked(st); 
+                    //     tmp += st + "<br/>"        
+                    // });
+                    main.innerHTML = msg.answer;
+                    // console.log()
+                    renderMathInElement(main, {
+                        delimiters: [
+                            {left: '$$', right: '$$', display: true},
+                            {left: '$', right: '$', display: false},
+                            // {left: '\\(', right: '\\)', display: true},
+                            // {left: '\\[', right: '\\]', display: true}
+                        ],
+                        throwOnError : false
+                    });
+                    main.innerHTML = marked(main.innerHTML);
+                    main.classList.add("div_chat");
+                    // const extra_answer_list = document.createElement('ul');
+                    // extra_answer_list.id = `extra_answer_list${answer_cnt}`;
+                    // const reply_list = document.createElement('ul');
+                    // reply_list.id = `reply_list${answer_cnt}`;
+                    const extra_info = document.createElement('div');
+                    extra_info.classList.add("extra_info");
+                    extra_info.innerHTML = 
+                    `<span class = "chat_font">At ${msg.time} </span>`;
+                    main.appendChild(extra_info);
+                    const answer = document.createElement('li');
+                    answer.classList.add("ul_hide_list");
+                    answer.appendChild(who);
+                    answer.appendChild(main);
+                    // answer.appendChild(extra_info);
+                    // answer.appendChild(extra_answer_list);
+                    // answer.appendChild(reply_list);
+                    answer_list.appendChild(answer);
+                    // renderMathInElement(document.body, {
+                    //     delimiters: [
+                    //         {left: '$$', right: '$$', display: true},
+                    //         {left: '$', right: '$', display: false},
+                    //         {left: '\\(', right: '\\)', display: true},
+                    //         {left: '\\[', right: '\\]', display: true}
+                    //     ],
+                    //     throwOnError : false
+                    // });
+                    window.scrollTo(0, document.body.scrollHeight);
+                }
+                function add_answer(msg) {
+                    answer_cnt += 1;
+                    const msg_answer = msg.answer;
+                    const who = document.createElement('div');
+                    who.innerHTML = 
+                    `<span style = "width: 16px; height: 16px;"> 
+                        <a href = "/user/${msg_answer.id}" style = "width: 16px; height: 16px;"> <img alt = "${msg_answer.id}" src = "/avatar/${msg_answer.id}" width = "16px" height = "16px"/> </a> 
+                    </span>
+                    <span> ${msg_answer.id} : </span>
+                    <button id = "extra${answer_cnt}" onclick = "calc_form(this.id)"> extra </button>
+                    <!-- <button id = "reply${answer_cnt}" onclick = "calc_form(this.id)"> reply </button> -->
+                    `;
+                    const main = document.createElement('div');
+                    // var tmp = '';
+                    // msg_answer.answer.forEach(st => {
+                    //     // tmp += marked(st); 
+                    //     tmp += st + "<br/>"        
+                    // });
+                    main.innerHTML = msg_answer.answer;
+                    console.log(main);
+                    renderMathInElement(main, {
+                        delimiters: [
+                            {left: '$$', right: '$$', display: true},
+                            {left: '$', right: '$', display: false},
+                            // {left: '\\(', right: '\\)', display: true},
+                            // {left: '\\[', right: '\\]', display: true}
+                        ],
+                        throwOnError : false
+                    });
+                    main.innerHTML = marked(main.innerHTML);
+                    main.classList.add("div_chat");
+                    const extra_answer_list = document.createElement('ul');
+                    extra_answer_list.id = `extra_answer_list${answer_cnt}`;
+                    const reply_list = document.createElement('ul');
+                    reply_list.id = `reply_list${answer_cnt}`;
+                    const extra_info = document.createElement('div');
+                    extra_info.classList.add("extra_info");
+                    extra_info.innerHTML = 
+                    `<span class = "chat_font">At ${msg_answer.time} &nbsp;&nbsp;&nbsp; ${answer_cnt} </span>`;
+                    main.appendChild(extra_info);
+                    const answer = document.createElement('li');
+                    answer.classList.add("ul_hide_list");
+                    answer.appendChild(who);
+                    answer.appendChild(main);
+                    // answer.appendChild(extra_info);
+                    answer.appendChild(extra_answer_list);
+                    answer.appendChild(reply_list);
+                    answer_list.appendChild(answer);
+                    msg.extra_answer.forEach(element => {
+                        add_extra_answer(answer_cnt, element);
+                    });
+
+                    window.scrollTo(0, document.body.scrollHeight);
+                }
+                function get_time() {
+                    const now = new Date();
+                    const year = now.getFullYear();
+                    const month = now.getMonth() + 1;
+                    const date = now.getDate();
+                    const hours = now.getHours();
+                    const minutes = now.getMinutes();
+                    const seconds = now.getSeconds();
+                    return `${year}-${month}-${date} ${hours}:${minutes}:${seconds}`;
+                }
+                form.addEventListener('submit', (e) => {
+                    e.preventDefault();
+                    if(ck === undefined) {
+                        input.value = '你没登录发牛魔的answer呢';
+                        return;
+                    }
+                    if (input.value) {
+                        var answer = input.value;
+                        if(form_state === "answer") socket.emit('answer message', ques_id, {answer: { id: ck, answer: answer, time: get_time() }, extra_answer: [], reply: []});
+                        if(form_state === "extra") socket.emit('extra answer message', ques_id, object, { id: ck, answer: answer, time: get_time()});
+                        input.value = '';
+                    }
+                });
+                socket.on('connect', () => {
+                    socket.emit("passed ques and answer", socket.id, ques_id);
+                });
+                socket.on('answer message', (id, msg) => {
+                    if(id != socket.id) return;
+                    add_answer(msg);
+                });
+                socket.on('extra answer message', (id, object, msg) => {
+                    if(id != socket.id) return;
+                    add_extra_answer(object, msg);
+                });
+                socket.on('passed ques and answer', (id, ques_and_answer) => {
+                    // console.log(ques_and_answer);
+                    if(id != socket.id) return;
+                    // var main = "";
+                    // ques_and_answer.main.forEach(st => {
+                    //     main += st + "\n";        
+                    // });
+                    // console.log(ques_and_answer.main);
+                    document.title = ques_id;
+
+                    document.getElementById("question").innerHTML = ques_and_answer.main;
+                    document.getElementById("title").innerHTML = ques_and_answer.title;
+                            console.log('quest: ', ques_and_answer.main);
+                            console.log('title: ', ques_and_answer.title);
+                    renderMathInElement(document.getElementById("question"), {
+                        delimiters: [
+                            {left: '$$', right: '$$', display: true},
+                            {left: '$', right: '$', display: false},
+                            // {left: '\\(', right: '\\)', display: true},
+                            // {left: '\\[', right: '\\]', display: true}
+                        ],
+                        throwOnError : false
+                    });
+                    document.getElementById("question").innerHTML = marked(document.getElementById("question").innerHTML);
+                    ques_and_answer.answer_list.forEach(element => {
+                        add_answer(element);
+                    });
+                    window.scrollTo(0, 0);
+                });
+            </script>
+        </div>
+
+	</body>
+</html>

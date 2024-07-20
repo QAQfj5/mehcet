@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html>
+
+    <head>
+        <meta charset = "utf-8" />
+        <title> user </title>
+        <link href = "/style.css"  rel = "stylesheet"/>
+        <script src="/jquery.min.js" ></script>
+        <script src="/jquery.cookie.min.js" ></script>
+        <script src="/socket.io/socket.io.js"></script>
+        <style>
+            .input {
+                width: 99%;
+                margin: auto;
+            }
+            #body {
+                width: 70%;
+                margin:auto;
+            }
+            #now_avatar {
+                width: 128px;
+                height: 128px;
+
+            }
+        </style>
+    </head>
+    <body>
+
+        <div id = "body">
+            <form action = "/api/setting" id = "input" style = "margin: auto" method = "get">
+                <div id = "now_avatar" class = "div_simple"></div>
+                <label for = "avatar"> avatar </label>
+                <br/>
+                <input type = "file" name = "avatar" id = "avatar" autocomplete = "off" class = "input input_avatar" placeholder = "" accept = "image/*"/> 
+                <br/>
+                <img id = "user_avatar_view" style = "width: 128px; height: 128px;" src="" />
+                <br>
+                <label for = "signature"> signature </label>
+                <br/>
+                <input type = "text" name = "signature" id = "signature" autocomplete = "off" class = "input input_signature" placeholder = "" /> 
+                <br/>
+                <label for = "background_image_url"> background image url </label>
+                <br/>
+                <input type = "text" name = "background_image_url" id = "background_image_url" autocomplete = "off" class = "input input_background_image_url" placeholder = "" /> 
+                <br/>
+                <!-- <label for = "title"> title </label>
+                <input type = "text" name = "title" id = "title" autocomplete = "off" class = "input input_title" placeholder = "" />  -->
+                <br/>
+                <label for = "submit">   </label>
+                <input type = "submit" name = "submit" value = "save" class = "submit" />
+            </form>
+        <div>
+        <script defer>
+            const user_id = window.location.href.split('/')[window.location.href.split('/').length - 2];
+            const ck = $.cookie('IsLogin');
+            const socket = io(); var user_info;
+            const form = document.getElementById("input");
+            const avatar = document.getElementById("avatar");
+            const signature = document.getElementById("signature");
+            const background_image_url = document.getElementById("background_image_url");
+        	socket.on('connect', () => {
+				// socket.emit("passed message", socket.id);
+                if(ck !== user_id) window.location.href = "../../error.html";
+				socket.emit('get user info', user_id);
+                
+			});
+
+			socket.on('user info', (id, info) => {
+				if(socket.id != id) return;
+				console.log(info);
+				user_info = info;
+                console.log(JSON.stringify(user_info));
+                if(user_info.available != 1) {
+                    document.write(`
+                    <div> ${user_id} </div>
+                    <div> 你怎么知道这个人被封了 </div>`);
+                }
+                if(user_info.home_background !== undefined) {
+                    document.body.style.background = `url(${user_info.home_background})`;
+
+                    document.body.style.backgroundSize = `cover`;
+                    document.body.style.backgroundPosition = `center`;
+                    document.body.style.backgroundAttachment = `fixed`;
+                    // background-size: ; background-position: center; background-attachment: fixed;
+                }
+                // document.getElementById("wangle").innerHTML += JSON.stringify(user_info);
+                // socket.emit('get user files info', user_id);
+                document.getElementById('now_avatar').innerHTML = `<div style = "margin: auto; width: 128px; height: 128px;"> <img alt = "${user_id}" src = "/avatar/${user_id}" style = "width: 128px; height: 128px;"/> </div>`;
+                signature.value = info.signature;
+                background_image_url.value = info.home_background;
+            });
+            form.addEventListener('submit', (e) => {
+                e.preventDefault();
+                if(avatar.files.length == 1) {
+                    const reader = new FileReader();
+                    const viewer = new FileReader();
+                    reader.readAsArrayBuffer(avatar.files[0]);
+                    viewer.readAsArrayBuffer(avatar.files[0]);
+                    viewer.onload = () => {
+                        document.getElementById("user_avatar_view").src = viewer.result;
+                    };
+                    reader.onload = () => {
+                        socket.emit("modify user avatar", user_id, reader.result);
+                        // document.getElementById("user_avatar_view").src = viewer.result;
+                    };
+                }
+
+                var ret = {
+                    signature: signature.value,
+                    home_background: background_image_url.value
+                };
+                socket.emit("modify user info", user_id, ret);
+                // if(ck === undefined) main.value = "你没登录你怎么 set"
+                // else {
+
+                // }
+            });
+            socket.on("modify user info finished", (id) => {
+                if(socket.id !== id) return;
+                console.log("modify user info finished");
+            });
+            socket.on("modify user avatar finished", (id) => {
+                if(socket.id !== id) return;
+                console.log("modify user avatar finished");
+            });
+            
+        </script>
+        
+        <!-- <a href = "/user/make_article.html"> make article </a> -->
+        
+    </body>
+</html>

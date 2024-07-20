@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html>
+
+    <head>
+        <meta charset = "utf-8" />
+        <title> user </title>
+        <link href = "/style.css"  rel = "stylesheet"/>
+        <script src="/jquery.min.js" ></script>
+        <script src="/jquery.cookie.min.js" ></script>
+        <script src="/socket.io/socket.io.js"></script>
+        <style>
+            body {
+                /* background: url("https://512pixels.net/downloads/macos-wallpapers-thumbs/10-10--thumb.jpg"); */
+                /* background: url("https://s21.ax1x.com/2024/07/13/pk42aCt.png"); */
+                /* background: url("https://s21.ax1x.com/2024/07/16/pkIQZHH.png"); */
+                /* background-color: aqua; */
+                background-size: cover;
+                background-position: center;
+                background-attachment: fixed;
+                /* background-position: fixed;   */
+            }
+            .folders{
+                /* border-left: black thin solid; */
+                margin-left: 1em;
+            }
+            .article_div {
+                margin-bottom: 0.5em;
+                /* border-radius: 0.5em; */
+                border-top: 2px rgba(175, 255, 255, 0.616) solid;
+                margin-right: 10px;
+            }
+            .article_about {
+                height: 3em;
+
+            }
+            .article_title {
+                font-size: 24px;
+                margin-top: 0.5em;
+                /* background-color: rgba(235, 255, 255, 0.616); */
+            }
+            .article_title:hover {
+                cursor: pointer;
+            }
+            .edit_button, .delete_button {
+                border: 1px red solid;
+                padding: 1px;
+            }
+            .edit_button:hover, .delete_button:hover {
+                cursor: pointer;
+            }
+            .div_button {
+                text-align: center;
+            }
+            .div_button:hover {
+                cursor: pointer;
+            }
+            /* #file_tree{ */
+                /* position: absolute; */
+                /* left: 100%; */
+            /* } */
+            #avatar {
+                position: relative;
+                /* align-items: center; */
+                /* z-index:; */
+            }
+            #signature {
+                position: relative;
+                max-width: calc(100% - 1em);
+                max-height: 3em;
+                overflow-x: auto;
+                overflow-y: none;
+            }
+            #signature::-webkit-scrollbar {
+                display: none;
+            }
+            #user_info {
+                width: 90%;
+                position: relative;
+                left: 5%;
+                display: flex;
+                flex-direction: row;
+            }
+            #introduction {
+                width: 60% - 128px;
+                height: 128px;
+            }
+            #body {
+                display: flex;
+                flex-direction: row;
+            }
+            #left_box {
+                position: relative;
+                top: 3.5em;
+                height: 50em;
+                background-color: rgba(255, 255, 255, 0.8);
+                width: 15em;
+                /* left: 0.5em; */
+                /* transform-style: preserve-3d; */
+                transform: perspective(3em) rotateY(1deg);
+                mask: linear-gradient(90deg, rgba(255, 255, 255, 0.8), rgba(255, 255, 255, 1));
+                backdrop-filter: blur(4px);
+                /* perspective: 200px;
+                transform: rotateY(30deg);
+                transform-origin: 100% 0 0; */
+            }
+            #middle_box {
+                width: calc(100% - 31em);
+            }
+            #right_box {
+                /* width: 15em; */
+                position: relative;
+                top: 3.5em;
+                height: 50em;
+                background-color: rgba(255, 255, 255, 0.8);
+                width: 15em;
+                
+                /* transform-style: preserve-3d; */
+                transform: perspective(3em) rotateY(-1deg);
+                mask: linear-gradient(90deg, rgba(255, 255, 255, 1), rgba(255, 255, 255, 0.8));
+                backdrop-filter: blur(4px);
+            }
+            #article_list {
+                /* background-color: aqua; */
+                margin: auto;
+                display: flex;
+                flex-direction: column;
+                height: 40em; 
+                overflow: auto;
+            }
+            #article_list::-webkit-scrollbar {
+                width: 4px;
+            }
+            #article_list::-webkit-scrollbar-button {
+                display: none;
+            }
+            #article_list::-webkit-scrollbar-thumb {
+                /* background: red; */
+                background: rgb(255, 0, 140);
+            }
+            #article_list::-webkit-scrollbar-track {
+                background: white;
+            }
+            #file_tree {
+                /* background-color: white; */
+                margin: auto;
+                height: 40em;
+            }
+        </style>
+    </head>
+        
+    <body>
+
+        <div id = "body">
+            <div id = "left_box">
+                <div id = "avatar" class = "div_simple"></div>
+                <div id = "signature" class = "div_simple"></div>
+            </div>
+            <div id = "middle_box">
+                <div id = "user_id">  </div>
+                <!-- <div> 你急牛魔呢，还没写完 </div>
+                <div id = "user_info">
+                    <div id = "head">
+                        <div id = "avatar" class = "div_simple div_shadow"></div>
+                            <div id = "signature" class = "div_simple div_shadow"></div>
+                    </div>
+                    <div id = "introduction" class = "div_simple div_shadow"></div>
+                </div> -->
+                <!-- <div>  -->
+                <div class = "div_simple div_shadow" style = "position: relative; top: 3em; background: rgba(255, 255, 255, 0.8); backdrop-filter: blur(2px);">
+                    <div style = "position: relative; height: 4em; padding-top: 2em">
+                        <span style = "font-size: 36px;"> Article </span>
+                        <!-- <button id = "create_article" onclick = "create_article()" style = "position: absolute; right: 0px"> create article </button> -->
+                    </div>
+                    <div id = "article_list"></div>
+                    <div id = "file_tree"></div>
+                </div>
+                <!-- </div> -->
+            </div>
+            <div id = "right_box">
+                <div id = "create_article" class = "div_simple div_button" onclick = "create_article()" > create article </div>
+                <div id = "user_setting" class = "div_simple div_button" onclick = "to_setting()" > setting </div>
+            </div>
+        <div>
+         <!-- <div style = "background-color: rgba(255,255,255,0.45); backdrop-filter: blur(8px); height: 30em; z-index: 1;"> 37847474747474747474747474747 </div>
+        <div style = "/* background-color: rgba(180, 255, 255, 1)  ;*/ position: absolute;top: 30em; height: 30em; z-index: -1;">34698765  </div>
+        <div onclick = "console.log("cnm"); console.log("cnmcnm");"> 11414 </div> -->
+        <script defer>
+            var user_id;
+            if(window.location.href.split('/')[window.location.href.split('/').length - 1] !== "") user_id = window.location.href.split('/')[window.location.href.split('/').length - 1];
+            else user_id = window.location.href.split('/')[window.location.href.split('/').length - 2];
+            const ck = $.cookie('IsLogin');
+            const socket = io();
+            function create_article() {
+                window.location.href = `/user/make_article.html?"id":"","user_id":"${user_id}"`;
+                console.log("created failed??");
+            }
+            function delete_article(article_id) {
+                socket.emit("delete article", user_id, article_id);
+            }
+            function to_setting() {
+                window.location.href = `/user/${user_id}/setting`;
+                console.log("setting failed??");
+            }
+            var dir, idx;
+
+            function calc_article_div(id, article) {
+                // console.log(info);xmlHTTPrequest
+                const title = article.title, about = article.about; 
+                var ret = 
+`
+            <div id = "${id}">
+                <div class = "article_div">
+                    <div class = "article_title" onclick = "visit_article('${id}')"> ${title} </div> 
+                    <br/>
+                    <div class = "article_about"> ${about} </div>
+                </div>
+                <div class = "article_info"> </div>
+                <div class = "article_tools">
+`;
+                if(ck == user_id) {
+                    ret += `<span class = "edit_button" id = "edit_${id}" onclick = "edit_article('${id}')"> edit </span>`;
+                    ret += `<span class = "delete_button" id = "delete_${id}" onclick = "delete_article('${id}')"> delete </span>`;
+                }
+                ret += 
+`
+                </div> 
+            </div>
+`;
+                return ret;
+            }
+            function calc_file_tree_article_div(id, info) {
+                // console.log(info);
+                const title = info.title;
+                console.log("calc_file_tree_article_div", id, info);
+                var ret = 
+`               <div id = "${id}">
+                    <div style = "margin-top: 1em;">
+                        <div style = "font-size: 20px;" onclick = "visit_article('${id}')"> ${title} </div> 
+                    </div>
+`;
+                if(ck == user_id) ret += `<div class = "edit_button" id = "edit_${id}" onclick = "edit_article('${id}')"> edit </div>`;
+                ret += `</div>`;
+                return ret;
+            }
+            var node_id = 0, map_filename_to_id = {"root": 0}, map_id_to_filename = ["root"];
+            var edge = [[]];
+            function add_node(filename) {
+                map_filename_to_id[filename] = ++node_id;
+                map_id_to_filename[node_id] = filename;
+                edge.push([]);
+                return node_id;
+            }
+            function add_edge(u, v) {
+                edge[u].push(v);
+            }
+            function unique(arr) {
+                var top = 0;
+                arr.sort();
+                arr.push("mehcet");
+                for(var i = 0; i < arr.length - 1; i++) {
+                    if(arr[i] != arr[i + 1]) arr[top++] = arr[i];
+                }
+                while(arr.length > top) arr.pop();
+                return arr;
+            }
+            function build_file_tree(dir) {
+                for (const path in dir) {
+                    if (Object.hasOwnProperty.call(dir, path)) {
+                        // console.log("我超你妈    ", path);
+                        var u = 0, v, nodes = path.split("/"), now = "root";
+                        if(nodes.length == 1 && nodes[0] == '') continue;
+                        for(var i = 0; i < nodes.length; i++) {
+                            now += '/' + nodes[i];
+                            if(map_filename_to_id[now] === undefined) v = add_node(now);
+                            else v = map_filename_to_id[now];
+                            add_edge(u, v);
+                            u = v;
+                        }
+                    }
+                }
+                console.log(map_filename_to_id);
+                console.log(map_id_to_filename);
+                for(var i = 0; i < edge.length; i++) {
+                    edge[i] = unique(edge[i]);
+                }
+                console.log(edge);
+            }
+            function switch_file(div_id) {
+                if(document.getElementById(`${div_id}_sonfile`).style.display == "block") document.getElementById(`${div_id}_sonfile`).style.display = "none", document.getElementById(`${div_id}th_state`).innerHTML = ">";
+                else document.getElementById(`${div_id}_sonfile`).style.display = "block", document.getElementById(`${div_id}th_state`).innerHTML = "v";
+            }
+            function calc_file_tree(rt) {
+                var ret = ``;
+                var now_name = map_id_to_filename[rt].split('/');
+                now_name = now_name[now_name.length - 1];
+                ret += `<div id = "${rt}th_file" onclick = "switch_file(${rt})"> <span id = "${rt}th_state" style = "display: inline-block; height: 1em; width: 1em; text-align: center;">></span>${now_name} </div>`;
+                ret += `<div id = "${rt}_sonfile" class = "folders" style = "display: none; /*padding-left: 1em;*/">
+                `;
+                for(var i = 0; i < edge[rt].length; i++) {
+                    ret += calc_file_tree(edge[rt][i]);
+                }
+                console.log("article_array", map_id_to_filename[rt].substring(5), map_id_to_filename[rt], dir[map_id_to_filename[rt].substring(5)]);
+                var article_array = dir[map_id_to_filename[rt].substring(5)];
+                if(article_array !== undefined) {
+                    for(var i = 0; i < article_array.length; i++) ret += calc_file_tree_article_div(article_array[i], idx[article_array[i]]);
+                }
+                ret += `</div>`;
+                return ret;
+            }
+
+            var user_info;
+            function visit_article(article_id) {
+                window.location.href = `/user/${user_id}/article/${article_id}`;
+            }
+            function edit_article(article_id) {
+                window.location.href = `/user/make_article.html?"id":"${article_id}","user_id":"${user_id}"`;
+            }
+        	socket.on('connect', () => {
+				// socket.emit("passed message", socket.id);
+				socket.emit('get user info', user_id);
+                
+			});
+
+			socket.on('user info', (id, info) => {
+				if(socket.id != id) return;
+				console.log(info);
+				user_info = info;
+                console.log(JSON.stringify(user_info));
+                if(user_info.available != 1) {
+                    document.write(`
+                    <div> ${user_id} </div>
+                    <div> 你怎么知道这个人被封了 </div>`);
+                    return;
+                }
+                if(user_info.home_background !== undefined) {
+                    document.body.style.background = `url(${user_info.home_background})`;
+
+                    document.body.style.backgroundSize = `cover`;
+                    document.body.style.backgroundPosition = `center`;
+                    document.body.style.backgroundAttachment = `fixed`;
+                    // background-size: ; background-position: center; background-attachment: fixed;
+                }
+                // document.getElementById("wangle").innerHTML += JSON.stringify(user_info);
+                socket.emit('get user files info', user_id);
+                document.getElementById('signature').innerHTML = user_info.signature;
+            });
+            socket.on('user files info', (id, DIR, IDX) => {
+                if(socket.id !== id) return;
+                dir = DIR;
+                idx = IDX;
+                console.log("dir", DIR, "idx", IDX);
+                for (const id in idx) {
+                    if (Object.hasOwnProperty.call(idx, id)) {
+                        const info = idx[id];
+                        console.log(id, info);
+                        document.getElementById("article_list").innerHTML += calc_article_div(id, info);
+                    }
+                }
+                build_file_tree(dir);
+                document.getElementById("file_tree").innerHTML = calc_file_tree(0);
+                if(ck == user_id) return;
+                // var hid = document.getElementsByClassName("edit_button");
+                // for(var i = 0; i < hid.length; i++) {
+                //     hid[i].style = "display: none;"
+                // }
+            });
+            socket.on('delete article finish', (id) => {
+                if(id !== socket.id) return;
+                console.log("finish");
+            });
+            socket.on("article err", (id, err_info) => {
+                if(id !== socket.id) return;
+                console.log(err_info);
+            });
+            $(document).ready(() => {
+                console.log(user_id);
+                document.getElementById('user_id').innerHTML = user_id;
+                document.getElementById('avatar').innerHTML = `<div style = "margin: auto; width: 128px; height: 128px;"> <img alt = "${user_id}" src = "/avatar/${user_id}" style = "width: 128px; height: 128px;"/> </div>`;
+
+            });
+            
+        </script>
+        
+        <!-- <a href = "/user/make_article.html"> make article </a> -->
+        
+    </body>
+</html>

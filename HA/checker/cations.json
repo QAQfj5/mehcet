@@ -1,0 +1,17 @@
+[
+    [{"name": "Ba",  "element": ["Ba"], "charge": 2, "mfH": -537.644, "mfS": 9.6232, "mfG": -560.73968}],
+    [{"name": "Ca",  "element": ["Ca"], "charge": 2, "mfH": -542.8, "mfS": -53.1, "mfG": -553.6}],
+    [{"name": "Cd",  "element": ["Cd"], "charge": 2, "mfH": 28930, "mfS": 28930, "mfG": 28930}],
+    [{"name": "Cu",  "element": ["Cu"], "charge": 2, "mfH": 64.76832, "mfS": -99.5792, "mfG": 65.52144}],
+    [{"name": "Fe",  "element": ["Fe"], "charge": 2, "mfH": -89.1192, "mfS": -137.6536, "mfG": -78.8684}, {"name": "Fe", "element": ["Fe"], "charge": 3, "mfH": -48.5344, "mfS": -315.892, "mfG": -4.6024}],
+    [{"name": "H",   "element": ["H"], "charge": 1, "mfH": 0, "mfS": 0, "mfG": 0}],
+    [{"name": "Hg",  "element": ["Hg"], "charge": 2, "mfH": 28930, "mfS": 28930, "mfG": 28930}],
+    [{"name": "K",   "element": ["K"], "charge": 1, "mfH": 28930, "mfS": 28930, "mfG": 28930}],
+    [{"name": "Mg",  "element": ["Mg"], "charge": 2, "mfH": -466.85072, "mfS": -138.072, "mfG": -454.8008}],
+    [{"name": "Mn",  "element": ["Mn"], "charge": 2, "mfH": -220.83152, "mfS": -73.6384, "mfG": -228.028}],
+    [{"name": "NH4", "element": ["H", "N"], "charge": 1, "mfH": -132.50728, "mfS": -132.50728, "mfG": -79.37048}],
+    [{"name": "Na",  "element": ["Na"], "charge": 1, "mfH": 28930, "mfS": 28930, "mfG": 28930}],
+    [{"name": "Pb",  "element": ["Pb"], "charge": 2, "mfH": 28930, "mfS": 28930, "mfG": 28930}],
+    [{"name": "Tl",  "element": ["Tl"], "charge": 1, "mfH": 28930, "mfS": 28930, "mfG": 28930}],
+    [{"name": "Zn",  "element": ["Zn"], "charge": 2, "mfH": -153.9, "mfS": -112.1, "mfG": -147.1}]
+]

@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html>
+	
+	<head>
+		<meta charset = "utf-8" />
+		<title> ${qs_id} </title>
+		<link href = "/style.css"  rel = "stylesheet"/>
+		<script src = "/jquery.min.js" ></script>
+        <script src="/jquery.cookie.min.js" ></script>
+		<script src = "/script_chat.js" ></script>
+        <style>  
+            .debug{ color: black;}
+        </style>
+	</head>
+
+	<body>
+
+        <div style = "width: 60%; margin: auto; padding: 8px;" class = "debug"> <h1> ${ques.title} </h1> </div>
+        <br/>
+        <div style = "width: 60%; margin: auto; padding: 8px;" class = "debug">
+            <div class = "div_simple div_shadow debug"> 
+                ${main}
+
+            </div>
+        
+            <ul id = "answer">  </ul>
+            <form id = "reply_form" method = "get">
+                <label for = "input">   </label>
+                <input type = "text" name = "input" id = "input" autocomplete = "off" style = "width: 14em;"/> 
+                <label for = "submit">   </label>
+                <input type = "submit" name = "submit" value = "send" />
+            </form>
+
+            <script src = "/socket.io/socket.io.js"> </script>
+            <script> 
+                const ck = $.cookie('IsLogin');
+                const socket = io();
+                const form = document.getElementById("reply_form");
+                const input = document.getElementById("input");
+                const answer = document.getElementById('answer');
+                function add_message(msg) {
+                    const message = document.createElement('div');
+                    const info = document.createElement('div');
+                    info.innerHTML = 
+                    `<span style = "width: 16px; height: 16px;"> 
+                        <a href = "/user/${msg.id}" style = "width: 16px; height: 16px;"> <img alt = "${msg.id}" src = "/avatar/${msg.id}" width = "16px" height = "16px"/> </a> 
+                    </span>
+                    <span class = "chat_font"> &nbsp;At ${msg.time} --- ${msg.id}: </span>`;
+                    const li = document.createElement('li');
+                    li.innerHTML = msg.message;
+                    li.classList.add("ul_hide_list");
+                    li.classList.add("li_simple");
+                    li.classList.add("li_chat");
+                    message.appendChild(info);
+                    message.appendChild(li);
+                    answer.appendChild(message);
+                    window.scrollTo(0, document.body.scrollHeight);
+                }
+                function get_time() {
+                    const now = new Date();
+                    const year = now.getFullYear();
+                    const month = now.getMonth() + 1;
+                    const date = now.getDate();
+                    const hours = now.getHours();
+                    const minutes = now.getMinutes();
+                    const seconds = now.getSeconds();
+                    return `${year}-${month}-${date} ${hours}:${minutes}:${seconds}`;
+                }
+                form.addEventListener('submit', (e) => {
+                    console.log("--4234");
+                    e.preventDefault();
+                    if(ck === undefined) {
+                        input.value = '你没登录发牛魔的answer呢';
+                        return;
+                    }
+                    if (input.value) {
+                        socket.emit('answer message', { id: ck, message: input.value, time: get_time() });
+                        input.value = '';
+                    }
+                });
+                socket.on('answer message', (id, msg) => {
+                    if(id != socket.id) return;
+                    add_message(msg);
+                });
+                // socket.on('answer message', (id, msg) => {
+                //     
+                //     const item = document.createElement('li');
+                //     item.innerHTML = msg;
+                //     item.classList.add("ul_hide_list");
+                //     item.classList.add("li_simple");
+                //     item.classList.add("debug");
+
+                //     // item.style.maxWidth = "13em";
+                //     item.style.overflow = "auto"; 
+                //     item.style.borderRadius = "0.25em";
+                //     item.style.marginTop = "1em";
+                //     item.style.marginBottom = "0.5em";
+                //     item.style.wordWrap = "break-word"; //英文换行
+                //     item.style.whiteSpace = "pre-wrap"; //中文换行
+                //     reply.appendChild(item);
+                //     window.scrollTo(0, document.body.scrollHeight);
+                //     // console.log(msg);
+                // });
+            </script>
+        </div>
+
+	</body>
+</html>

@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html>
+	
+	<head>
+		<meta charset = "utf-8" />
+		<title> new </title>
+		<link href = "/style.css"  rel = "stylesheet"/>
+		<script src="/jquery.min.js" ></script>
+		<script src="/jquery.cookie.min.js" ></script>
+		<!-- <script src="/script_chat.js" ></script> -->
+        <script src="/marked.js"></script>
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/katex.min.css" integrity="sha384-wcIxkf4k558AjM3Yz3BBFQUbk/zgIYC2R0QpeeYb+TwlBVMrlgLqwRjRtGZiK7ww" crossorigin="anonymous">
+        <script defer="" src="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/katex.min.js" integrity="sha384-hIoBPJpTUs74ddyc4bFZSM1TVlQDA60VBbJS0oA934VSz82sBx1X7kSx2ATBDIyd" crossorigin="anonymous"></script>        <script defer="" src="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/contrib/auto-render.min.js" integrity="sha384-43gviWU0YVjaDtb/GhzOouOXtZMP/7XUzwPTstBeZFe/+rCMvRwr4yROQP43s0Xk" crossorigin="anonymous" onload="renderMathInElement(document.body);"></script>
+        <script defer="" src="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/katex.js" integrity="sha384-IolEJdmwZJpJkyCvXBnmGt8wXcP3nvRjxBjPv7/PWW7oODJhZ+qiY1sDpwgjcKLT" crossorigin="anonymous"></script>
+
+		<style> 
+            .input_title, .input_id, .input_path, .input_about{
+                width: 80%;
+                display: block;
+                margin: auto;
+                /* height: 50em; */
+            }
+            .input_main, .input_about {
+                width: 80%;
+                height: 50em;
+                display: block;
+                margin: auto;
+                /* position: absolute; */
+            }
+            .input_about {
+                width: 80%;
+                height: 5em;
+                display: block;
+                margin: auto;
+            }
+            .release {
+                width: 10em;
+                display: block;
+                position: relative;
+                left: 40.25em;
+            }
+            #error {
+                z-index: 114514;
+                position: fixed;
+                top: calc(50% - 150px);
+                left: calc(50% - 150px);
+                width: 300px;
+                height: 300px;
+            }
+		</style>
+        <script>
+            var article;
+            var state = "edit";
+            function view_LaTeX() {
+                if(state === "edit") {
+                    document.getElementById("view_button").innerHTML = "edit";
+                    document.getElementById("view").innerHTML = document.getElementById("main").value;
+                    document.getElementById("view").style['display'] = "block";
+                    document.getElementById("main").style['display'] = "none";
+                    state = "view";
+                    renderMathInElement(document.getElementById("view"), {
+                        delimiters: [
+                            {left: '$$', right: '$$', display: true},
+                            {left: '$', right: '$', display: false},
+                            {left: '\\(', right: '\\)', display: true},
+                            {left: '\\[', right: '\\]', display: true}
+                        ],
+                        throwOnError : false
+                    });
+                    document.getElementById("view").innerHTML = marked(document.getElementById("view").innerHTML);
+                    // console.log(123321);
+                } else if(state === "view"){
+                    document.getElementById("view_button").innerHTML = "view";
+                    document.getElementById("view").style['display'] = "none";
+                    document.getElementById("main").style['display'] = "block";
+                    state = "edit";
+                }
+                // console.log(editor.markdownToHTML)
+            }
+        </script>
+	</head>
+
+	<body>
+		<div class = "div_simple div_shadow" style = "width: 90%; margin: auto;">
+            <button id = "view_button" onclick = "view_LaTeX()"> view </button>
+            <form action = "/api/article" id = "input" style = "margin: auto" method = "get">
+                <label for = "path"> path </label>
+                <input type = "text" name = "path" id = "path" autocomplete = "off" class = "input_path" placeholder = "文章路径，用于文章分类。路径中请用“/”分隔，最多三层，仅支持大小写字母，“-” 和 “_”" /> 
+                <br/>
+                <label for = "id"> id </label>
+                <input type = "text" name = "id" id = "id" autocomplete = "off" class = "input_id" placeholder = "文章 id，仅支持大小写字母，“-” 和 “_”" /> 
+                <br/>
+                <label for = "title"> title </label>
+                <input type = "text" name = "title" id = "title" autocomplete = "off" class = "input_title" placeholder = "title" /> 
+                <br/><br/>
+                <!-- <br/> -->
+                <label for = "main">   </label>
+                <!-- <div id = "editor" style="display: flex; flex-direction: row;">  -->
+                <textarea class = "input_main" name = "main" id = "main" rows = "10" placeholder = "还没写完你急牛魔"></textarea>
+                <div id = "view" style = "display: none;"></div>
+                <!-- <div id = "view_LaTeX" >  </div> -->
+                <label for = "about"> about </label>
+                <textarea class = "input_about" name = "about" rows = "5" id = "about" placeholder = "about"></textarea> 
+                <label for = "submit">   </label>
+                <br/>
+                <input type = "submit" name = "submit" value = "release" class = "release" />
+            </form>
+            <button id = "save_button" onclick="save_article(1)"> Save article </button>
+		</div>
+        <script> 
+            function hid_err() {
+                document.getElementById("error").style = "display: none;"
+            }
+            function throw_err(err_info) {
+                document.getElementById("error").style = "display: block;"
+                document.getElementById("err_info").innerHTML = err_info;
+                console.log(err_info);
+            }
+        </script>
+        <div id = "error" class = "div_simple div_shadow" style = "display: none;" draggable = "true"> 
+            <div id = "err_info" style = "display: block;">  </div>
+            <button onclick = "hid_err()"> close </button>
+        </div>
+
+        <!-- <button onclick="() => {console.log(114514)}"> cs </button> -->
+		<script src = "/socket.io/socket.io.js"></script>
+		<script>
+            function get_time() {
+				const now = new Date();
+				const year = now.getFullYear();
+				const month = now.getMonth() + 1;
+				const date = now.getDate();
+				const hours = now.getHours();
+				const minutes = now.getMinutes();
+				const seconds = now.getSeconds();
+				return `${year}-${month}-${date} ${hours}:${minutes}:${seconds}`;
+			}
+            const ck = $.cookie('IsLogin');
+			const socket = io();
+            // console.log($);
+            const form = document.getElementById("input");
+            const path = document.getElementById("path");
+            const id = document.getElementById("id");
+            const title = document.getElementById("title");
+            const about = document.getElementById("about");
+            const main = document.getElementById("main");
+            var info;
+            function save_article(jumping) {
+                console.log(article);
+                var empty = 0;
+                if(title.value == '') {
+                    empty = 1;
+                    title.placeholder = "你tm标题没写你知道吗";
+                }
+                if(main.value == '' && empty) {
+                    main.placeholder = "你tm不仅标题没写还不写内容是吧"
+                } else if(main.value == '' && empty == 0) { 
+                    empty = 1;
+                    main.placeholder = "你tm内容没写你知道吗"
+                }
+                if(id.value == '') {
+                    empty = 1;
+                    id.placeholder = "为什么你的 article 没有 id"
+                }
+                if(empty != 0) return -1;
+                // if(check_id(id.value) == 0) {
+                //     throw_err("cnm, 谁让你把id搞成这个鸟样的？/fn");
+                //     return;
+                // }
+                // if(check_path(path.value) == 0) {
+                //     throw_err("你怎么 path 里有空文件夹？");
+                //     return;
+                // }
+                var new_article = {
+                    old_path: article.old_path,
+                    path: path.value,
+                    id: id.value,
+                    old_id: article.old_id,
+                    author: ck,
+                    first_release_time: article.first_release_time,
+                    last_modify_time: get_time(),
+                    title: title.value,
+                    about: about.value,
+                    body: main.value
+                }
+                article = new_article;
+                socket.emit("save article", ck, article, jumping);
+                
+            }
+            // console.log(form);w
+            /*
+            article: 
+            {
+                    old_path: xx/xx/xx
+                    path: xx/xx/xx,
+                    id: ,
+                    old_id: ,
+                    author: ,
+                    first_release_time: ,
+                    last_modify_time: ,
+                    title: ,
+                    body: 
+            }
+            */
+            var wait_to_release = 0;
+            form.addEventListener('submit', (e) => {
+                e.preventDefault();
+                if(ck === undefined) main.value = "你没登录发牛魔的article啊"
+                else {
+
+                    // console.log("nmsl");
+                    if(article.first_release_time === undefined) article.first_release_time = get_time();
+                    wait_to_release = 1;
+                    if(save_article(1) == -1) wait_to_release = 0;
+                    // socket.emit('release article', ck, article);
+                    // title.value = '';
+                    // main.value = '';
+                    
+                }
+            });
+            socket.on('connect', () => {
+                console.log(socket.id);
+                info = JSON.parse('{' + decodeURI(window.location.search.substring(1)) + '}');
+                // console.log(info);
+                document.getElementById("id").value = info.id;
+                if(info.user_id != ck) window.location.href = "../error.html";
+                socket.emit("get article", info.user_id, info.id);
+                // document.getElementById("path").value = 114514;
+            });
+            socket.on('released', (id, goal) => {
+                if(id === socket.id) window.location.href = ck + "/article/" + goal;
+            });
+            socket.on('article', (id, Article) => {
+                if(id === socket.id) {
+                    article = Article;
+                    if(article.path !== undefined) path.value = article.path;
+                    if(article.body !== undefined) main.value = article.body;
+                    if(article.title !== undefined) title.value = article.title;
+                    if(article.id !== undefined) id.value = article.id;
+                    if(article.about !== undefined) about.value = article.about;
+                }
+            });
+            socket.on('save article finished', (ID) => {
+                if(ID !== socket.id) return;
+                console.log("oifjweoifjoiwejfoiwjefoijwoejfjweoifjoe");
+                article.old_id = article.id;
+                article.old_path = article.path;
+                console.log(wait_to_release);
+                if(wait_to_release == 1) {
+                    socket.emit('release article', ck, article);
+                    wait_to_release = 0;
+
+                } else {
+                    window.location.search = `?"id":"${id.value}","user_id":"${info.user_id}"`;
+                }
+            });
+            socket.on('article err', (id, err_info) => {
+                if(id !== socket.id) return;
+                throw_err(err_info);
+                wait_to_release = 0;
+            })
+            setInterval(() => {
+                console.log(wait_to_release);
+            }, 300);
+		</script>
+		<!-- <a href = "https://www.luogu.com.cn/" class = "a_simple a_shadow"> hrangwokankan </a> -->
+	</body>
+</html>

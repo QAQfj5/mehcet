@@ -6,7 +6,80 @@
 		<title> Hydroxy_Acid </title>
 		<link href = "/style.css"  rel = "stylesheet"/>
 		<script src="/jquery.min.js" ></script>
+		<script src="/jquery.cookie.min.js" ></script>
 		<script src="/script_chat.js" ></script>
+		<script src="/marked.js"></script>
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/katex.min.css" integrity="sha384-wcIxkf4k558AjM3Yz3BBFQUbk/zgIYC2R0QpeeYb+TwlBVMrlgLqwRjRtGZiK7ww" crossorigin="anonymous">
+        <script src="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/katex.min.js" integrity="sha384-hIoBPJpTUs74ddyc4bFZSM1TVlQDA60VBbJS0oA934VSz82sBx1X7kSx2ATBDIyd" crossorigin="anonymous"></script>
+        <script src="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/contrib/auto-render.min.js" integrity="sha384-43gviWU0YVjaDtb/GhzOouOXtZMP/7XUzwPTstBeZFe/+rCMvRwr4yROQP43s0Xk" crossorigin="anonymous"></script>
+        <script src="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/katex.js" integrity="sha384-IolEJdmwZJpJkyCvXBnmGt8wXcP3nvRjxBjPv7/PWW7oODJhZ+qiY1sDpwgjcKLT" crossorigin="anonymous"></script>
+		<style> 
+			body{ display: flex; }
+			#left { height: 100%; }
+			#middle { width: calc(85% - 15em); height: 100%; margin: auto; }
+			#right { width: 15%; height: 100%; }
+			.ul_main {
+				width: 5em; position: fixed; top: 20em; right: 0em;
+				/* display: flex; */
+				/* flex-direction: row-reverse; */
+
+				/* justify-content: flex-end; */
+			}
+			.li_chat {
+				overflow: auto; 
+				border-top-color: aqua;
+				border-top-width: 1px;
+				border-top-left-radius: 0px;
+				border-top-right-radius: 0px;
+				border-bottom-left-radius: 0.30em;
+				border-bottom-right-radius: 0.30em;
+				margin-top: 1px;
+				margin-bottom: 0.5em;
+				word-wrap: break-word; /*英文换行*/
+				white-space: pre-wrap; /*中文换行*/
+			}
+			li a:link {color: #000000;}
+			li a:visited {color: #000000;}
+			li a:hover {color: #000000;}
+			li a:active {color: #000000;}
+			li a:link {text-decoration: none;}
+			li a:visited {text-decoration: none;}
+			li a:hover {text-decoration: none;}
+			li a:active {text-decoration: none;}
+			li a {
+				/* margin: 0.5em; */
+				display: block;
+				width: 4.5em;
+				padding: 1.75em 0;
+				text-align: center;
+				transition-duration: 300ms;
+				/* border-radius: 0.5em; */
+				/* background-colomr: rgba(255, 255, 255, 0.85); */
+			}
+			li a:hover {
+				padding-top: 2.25em;
+				padding-bottom: 2.25em;
+			}
+			.li_shadow {
+				transition-duration: 300ms;
+			}
+
+			.li_shadow:hover {
+				background-color: rgba(255, 0, 0, 0.85);
+			}
+			.chat_font {
+				/* text-align: center; */
+				font-size: 8px;
+			}
+			.li_main {
+				display: flex;
+				flex-direction: row;
+			}
+			.li_main:hover {
+				width: 10em;
+				margin-left: -5em;
+			}
+		</style>
 	<!-- <link href = "/HA/script_chat.js" rel = "script"/> -->
 	<!-- <script>
 		function pul()
@@ -19,28 +92,145 @@
 	<body>
 		<div id = "left">
 			<div class = "div_simple div_shadow" id = "div_chat">
-				<form action = "/api/chat"id = "left_box_input" style = "position: absolute; bottom: 1em;">
-					<input type = "text" name = "input" id = "input" autocomplete = "off" style = "width: 14em;"/> 
-					<input type = "submit" value = "send" />
-				</form>
+				<div id = "div_left_hidden">
+					<ul id = "messages" style = "max-width: 13em; max-height: 42em; overflow-y: auto;"> </ul>
+					<form action = "/api/chat" id = "left_box_input" style = "position: absolute; bottom: 1em;" method = "get">
+						<label for = "input">   </label>
+						<input type = "text" name = "input" id = "input" autocomplete = "off" style = "width: 14em;"/> 
+						<label for = "submit">   </label>
+						<input type = "submit" name = "submit" value = "send" />
+					</form>
+				</div>
 			</div>
 		</div>
 		<div id = "middle">
-			<div class = "div_simple div_shadow" > i think the div can write somethings interesting <br/> <br/> <br/> <br/> <br/> <br/> </div>
-			<div>
-				
+			<div class = "div_simple div_shadow" > i think the div can write somethings interesting <br/> https://www.luogu.com/article/a53rnxbb <br/> <br/> <br/> <br/> <br/> </div>
+			<div class = "div_simple div_shadow">
+				喜报：支持 $\LaTeX$ 了
+				<br/>
+				悲报：要清用户数据，时间未定
 			</div>
 		</div>
-
+		<script> 
+			renderMathInElement(document.body, {
+				delimiters: [
+					{left: '$$', right: '$$', display: true},
+					{left: '$', right: '$', display: false},
+					// {left: '\\(', right: '\\)', display: true},
+					// {left: '\\[', right: '\\]', display: true}
+				],
+				throwOnError : false
+			});
+			// document.getElementById("question").innerHTML = marked(document.getElementById("question").innerHTML);
+		</script>
 		<div id = "right">
-			<div class = "div_simple" style = "position: absolute; right: 0px"> <a href = "/login.html"> login </a> <div>
-				<ul class = "ul_simple ul_hide_list ul_main">
-					<li class = "li_simple li_shadow"> <a href = "#main"> main </a> </li>
-					<li class = "li_simple li_shadow"> <a href = "https://www.luogu.com.cn/"> kankaneed </a> </li>
-				</ul>
-			</div>
+			<div id = "islogin" class = "div_simple div_shadow" style = "position: absolute; right: 0px; padding-top: 1.5em; padding-bottom: 1.5em; margin: 0px; width: 48px;"></div>
+			
+			
+			<script>
+				function logout() {
+					// console.log(104839423);
+					$.removeCookie('IsLogin');
+					location.reload();
+				}
+				const ck = $.cookie('IsLogin');
+				// console.log(ck);
+				const notyet=`<a href = "/login.html" style = "width: 48px; margin: auto; text-align: center; display: block;">login</a>`;
+				if(ck === undefined) {
+					document.getElementById(`islogin`).innerHTML = notyet;
+					document.getElementById(`islogin`).style.paddingBottom = "1.5em";
+					document.getElementById(`islogin`).style.paddingTop = "1.5em";
+					// document.getElementById(`islogin`).style.paddinLeft = "0.8em";
+					// document.getElementById(`islogin`).style.paddingRight = "0.8em";
+				} else {
+					document.getElementById(`islogin`).innerHTML = `<div style = "width: 48px; height: 48px; position: relative; right: 0; "> <a href = "/user/${ck}"> <img alt = "${ck}" src = "/avatar/${ck}" width = "48px" height = "48px"/> </a> </div>`;
+					document.getElementById(`islogin`).innerHTML +=
+					`<div id = "direction" style = "display: none;">
+						<button onclick = "logout()"> Logout </button>
+					</div>`;
+						// document.getElementById(`islogin`).style.paddingBottom = "8px";
+						// document.getElementById(`islogin`).style.paddingTop = "8px";
+						// document.getElementById(`islogin`).style.paddingLeft = "8px";
+						// document.getElementById(`islogin`).style.paddingRight = "8px";
+						document.getElementById(`islogin`).style.padding = "8px";
+					}
+					</script>
+			<ul class = "ul_simple ul_hide_list ul_main">
+				<li class = "li_simple li_shadow li_main"> <a href = "#main"> main </a> </li>
+				<li class = "li_simple li_shadow li_main"> <a href = "https://www.luogu.com.cn/"> kankaneed </a> </li>
+				<li class = "li_simple li_shadow li_main"> <a href = "/questions/new.html"> mknew </a> </li>
+				<li class = "li_simple li_shadow li_main"> <a href = "/questions"> ques </a> </li>
+				<li class = "li_simple li_shadow li_main"> <a href = "/admin_setting.html"> 乱七八糟搞 </a> </li>
+			</ul>
 		</div>
+		<!-- </div> -->
+		<script src="/socket.io/socket.io.js"></script>
+		<script>
+			const socket = io(); var user_info;
+			// console.log(socket);
+			// console.log(ck);
+			const form = document.getElementById('left_box_input');
+			const input = document.getElementById('input');
+			const messages = document.getElementById('messages');
+			function add_message(msg) {
+				const message = document.createElement('div');
+
+				const info = document.createElement('div');
+				info.innerHTML = 
+				`<span style = "width: 16px; height: 16px;"> 
+					<a href = "/user/${msg.id}" style = "width: 16px; height: 16px;"> <img alt = "${msg.id}" src = "/avatar/${msg.id}" width = "16px" height = "16px"/> </a> 
+					</span>
+					<span class = "chat_font"> &nbsp;At ${msg.time} --- ${msg.id}: </span>`;
+					const li = document.createElement('li');
+				li.innerHTML = msg.message;
+				li.classList.add("ul_hide_list");
+				li.classList.add("li_simple");
+				li.classList.add("li_chat");
+				message.appendChild(info);
+				message.appendChild(li);
+				messages.appendChild(message);
+				window.scrollTo(0, document.body.scrollHeight);
+			}
+			function get_time() {
+				const now = new Date();
+				const year = now.getFullYear();
+				const month = now.getMonth() + 1;
+				const date = now.getDate();
+				const hours = now.getHours();
+				const minutes = now.getMinutes();
+				const seconds = now.getSeconds();
+				return `${year}-${month}-${date} ${hours}:${minutes}:${seconds}`;
+			}
+			form.addEventListener('submit', (e) => {
+				e.preventDefault();
+				if(ck === undefined) input.value = '你tm没登录发牛魔的消息啊';
+				else if (input.value) {
+					socket.emit('chat message', { id: ck, message: input.value, time: get_time()});
+					input.value = '';
+				}
+			});
+			socket.on('connect', () => {
+				socket.emit("passed message", socket.id);
+				socket.emit('get_user_info', ck);
+			});
+			socket.on('chat message', (msg) => {
+				add_message(msg);
+                
+			});
+			socket.on('user_info', (id, info) => {
+				// console.log);
+				if(socket.id != id) return;
+				console.log(info);
+				user_info = info;
+			});
+			socket.on("passed message", (id, msg) => {
+				console.log(socket.id);
+				if(id != socket.id) return;
+				msg.forEach(element => {
+					add_message(element);
+				});
+			});
+		</script>
 		<!-- <a href = "https://www.luogu.com.cn/" class = "a_simple a_shadow"> hrangwokankan </a> -->
 	</body>
-	
 </html>
